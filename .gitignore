@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+.env/
+*.pyc
+__pycache__/
+
+# Homebrew (if accidentally in your repo)
+Homebrew/
+*.brew
+
+# Other IDE/config files (e.g., .vscode/, .idea/)
+.vscode/
+.idea/
