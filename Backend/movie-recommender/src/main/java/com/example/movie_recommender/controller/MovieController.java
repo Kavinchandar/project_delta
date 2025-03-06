@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -35,9 +37,19 @@ public class MovieController {
     public List<Movie> getMoviesByGenre(@PathVariable String genre) {
         return movieService.getMoviesByGenre(genre);
     }
-    
-    @PostMapping("/movies")
-    public Movie createMovie(@RequestBody Movie movie) {
-        return movieService.saveMovie(movie);
+
+    @PostMapping("/recommendations")
+    public ResponseEntity<String> getRecommendationsFromPrompt(@RequestBody Map<String, String> request) {
+
+        // Extract the user prompt from the request body
+        String userPrompt = request.get("prompt");
+        if (userPrompt == null || userPrompt.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        // Call the service method to process the prompt and get recommendations
+        String recommendations = movieService.getRecommendationsFromPrompt(userPrompt);
+
+        return ResponseEntity.ok(recommendations);
     }
 }
