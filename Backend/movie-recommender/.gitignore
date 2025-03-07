@@ -34,4 +34,3 @@ build/
 
 ### to protect api keys ###
 /src/main/resources/application.properties
-.env
