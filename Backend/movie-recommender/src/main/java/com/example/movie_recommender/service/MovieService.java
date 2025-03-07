@@ -50,6 +50,7 @@ public class MovieService {
 
         // Construct the request payload (using OpenAI's Chat API for example)
         String jsonPayload = String.format("{\"model\":\"gpt-3.5-turbo\",\"messages\":[{\"role\":\"user\",\"content\":\"%s\"}]}", userPrompt);
+        System.out.println("Payload: " + jsonPayload); 
 
         // Set the API endpoint URL (OpenAI API URL)
         String url = "https://api.openai.com/v1/chat/completions";
