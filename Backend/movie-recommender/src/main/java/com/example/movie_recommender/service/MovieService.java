@@ -21,6 +21,9 @@ public class MovieService {
 
     @Value("${openai.api.key}")
     private String openAIAPIKey;
+
+    @Value("${tmdb.api.key}")
+    private String TMDB_API_KEY;
     
     @Autowired
     public MovieService(MovieRepository movieRepository, RestTemplate restTemplate, ObjectMapper objectMapper) {
@@ -30,8 +33,31 @@ public class MovieService {
     }
     
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+        List<Movie> localMovies = movieRepository.findAll();
+        
+        try {
+            // Fetch popular movies from TMDb API
+            String url = String.format("https://api.themoviedb.org/3/movie/popular?api_key=%s&page=1", TMDB_API_KEY);
+            
+            // Get the raw response as a string
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
+            
+            // Log status code and response body
+            System.out.println("Response Status: " + responseEntity.getStatusCode());
+            System.out.println("Response Body: " + responseEntity.getBody());
+            
+            // If we get a successful response, log a message (but don't try to process it yet)
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Successfully received response from TMDb API");
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to fetch movies from TMDb: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return localMovies;
     }
+        
     
     public Optional<Movie> getMovieById(Long id) {
         return movieRepository.findById(id);
@@ -54,6 +80,7 @@ public class MovieService {
 
         // Set the API endpoint URL (OpenAI API URL)
         String url = "https://api.openai.com/v1/chat/completions";
+        
 
         // Set up the HTTP headers
         HttpHeaders headers = new HttpHeaders();
