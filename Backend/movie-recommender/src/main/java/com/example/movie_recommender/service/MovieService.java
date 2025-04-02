@@ -68,6 +68,18 @@ public class MovieService {
                     movie.setOverview(movieNode.get("overview").asText());
                     movie.setVoteAverage(movieNode.get("vote_average").asDouble());
                     movie.setReleaseYear(movieNode.get("release_date").asText());
+                    
+                    // Process genre IDs
+                    if (movieNode.has("genre_ids") && movieNode.get("genre_ids").isArray()) {
+                        List<String> genreIds = new ArrayList<>();
+                        JsonNode genreIdsNode = movieNode.get("genre_ids");
+                        
+                        for (JsonNode genreId : genreIdsNode) {
+                            genreIds.add(genreId.asText());
+                        }
+                        
+                        movie.setGenres(genreIds);
+                    }
                     movies.add(movie);
                 }
             }
