@@ -8,9 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
+
 
 @Service
 public class MovieService {
@@ -33,30 +36,50 @@ public class MovieService {
     }
     
     public List<Movie> getAllMovies() {
-        List<Movie> localMovies = movieRepository.findAll();
+    List<Movie> localMovies = movieRepository.findAll();
+    List<Movie> movies = new ArrayList<>();
+    
+    try {
+        // Fetch popular movies from TMDb API
+        String url = String.format("https://api.themoviedb.org/3/movie/popular?api_key=%s&page=1", TMDB_API_KEY);
         
-        try {
-            // Fetch popular movies from TMDb API
-            String url = String.format("https://api.themoviedb.org/3/movie/popular?api_key=%s&page=1", TMDB_API_KEY);
+        // Get the raw response as a string
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
+        
+        // Log status code and response body
+        System.out.println("Response Status: " + responseEntity.getStatusCode());
+        System.out.println("Response Body: " + responseEntity.getBody());
+        
+        // If we get a successful response, process the data
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            // Parse JSON response
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(responseEntity.getBody());
+            JsonNode results = root.get("results");
             
-            // Get the raw response as a string
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
-            
-            // Log status code and response body
-            System.out.println("Response Status: " + responseEntity.getStatusCode());
-            System.out.println("Response Body: " + responseEntity.getBody());
-            
-            // If we get a successful response, log a message (but don't try to process it yet)
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Successfully received response from TMDb API");
+            if (results != null && results.isArray()) {
+                for (JsonNode movieNode : results) {
+                    // Create Movie objects with data from TMDb API
+                    Movie movie = new Movie();
+                    movie.setTitle(movieNode.get("original_title").asText());
+                    movie.setId(movieNode.get("id").asLong());
+                    // https://image.tmdb.org/t/p/original/[poster_path]  - use this to actually see the images in the frontend  
+                    movie.setPosterPath(movieNode.get("poster_path").asText());
+                    movie.setOverview(movieNode.get("overview").asText());
+                    movie.setVoteAverage(movieNode.get("vote_average").asDouble());
+                    movie.setReleaseYear(movieNode.get("release_date").asText());
+                    movies.add(movie);
+                }
             }
-        } catch (Exception e) {
-            System.err.println("Failed to fetch movies from TMDb: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Successfully processed " + movies.size() + " movies from TMDb API");
         }
-        
-        return localMovies;
+    } catch (Exception e) {
+        System.err.println("Failed to fetch movies from TMDb: " + e.getMessage());
+        e.printStackTrace();
     }
+    
+    return movies;
+}
         
     
     public Optional<Movie> getMovieById(Long id) {
@@ -72,6 +95,7 @@ public class MovieService {
     }
 
     public String getRecommendationsFromPrompt(String userPrompt) {
+        
         System.out.println("Received user prompt: " + userPrompt);
 
         // Construct the request payload (using OpenAI's Chat API for example)
@@ -79,7 +103,8 @@ public class MovieService {
         System.out.println("Payload: " + jsonPayload); 
 
         // Set the API endpoint URL (OpenAI API URL)
-        String url = "https://api.openai.com/v1/chat/completions";
+        // String url = "https://api.openaii.com/v1/chat/completions";
+        String url = "https://dummy.com";
         
 
         // Set up the HTTP headers

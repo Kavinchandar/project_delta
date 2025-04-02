@@ -15,8 +15,8 @@ public class Movie {
     private String title;
     private String overview;
     private String posterPath;
-    private Double rating;
-    private Integer releaseYear;
+    private Double voteAverage;
+    private String releaseYear;
     
     @ElementCollection
     private List<String> genres;
