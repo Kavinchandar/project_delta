@@ -62,7 +62,7 @@ public class MovieService {
                     // Create Movie objects with data from TMDb API
                     Movie movie = new Movie();
                     movie.setTitle(movieNode.get("original_title").asText());
-                    movie.setId(movieNode.get("id").asLong());
+                    // movie.setId(movieNode.get("id").asLong());
                     // https://image.tmdb.org/t/p/original/[poster_path]  - use this to actually see the images in the frontend  
                     movie.setPosterPath(movieNode.get("poster_path").asText());
                     movie.setOverview(movieNode.get("overview").asText());
@@ -90,11 +90,14 @@ public class MovieService {
         e.printStackTrace();
     }
     
-    return movies;
+    movieRepository.saveAll(movies);
+    System.out.println(movieRepository.findAll());
+    return movieRepository.findAll();
 }
         
     
     public Optional<Movie> getMovieById(Long id) {
+        System.out.println("getMovieById method is called with ID: " + id);
         return movieRepository.findById(id);
     }
     

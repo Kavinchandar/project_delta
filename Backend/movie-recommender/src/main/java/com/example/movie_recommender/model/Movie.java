@@ -13,6 +13,7 @@ public class Movie {
     private Long id;
     
     private String title;
+    @Column(length = 2048)
     private String overview;
     private String posterPath;
     private Double voteAverage;
