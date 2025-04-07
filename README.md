@@ -1,4 +1,4 @@
 # project_delta
-My humble version of building an AI software
+building an AI movie recommender Chatbot called Popcorn.
 
-Java, AWS, Vue, AIML
+Java Springboot, AWS, React Native, AIML
