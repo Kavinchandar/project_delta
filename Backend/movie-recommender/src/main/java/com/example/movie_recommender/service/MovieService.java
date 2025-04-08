@@ -109,10 +109,19 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    public String getRecommendationsFromPrompt(String userPrompt) {
+    public String getRecommendationsFromPrompt(String userPrompt, List<Movie> movies) {
         
         System.out.println("Received user prompt: " + userPrompt);
+        
+        List<Movie> movies = movieRepository.findAll();
+        System.out.println(movies);
 
+
+        //part 1: Fetch movies from the database using db chroma
+
+
+        //part 2: Fetch movies from the OpenAI API using the user prompt
+        
         // Construct the request payload (using OpenAI's Chat API for example)
         String jsonPayload = String.format("{\"model\":\"gpt-3.5-turbo\",\"messages\":[{\"role\":\"user\",\"content\":\"%s\"}]}", userPrompt);
         System.out.println("Payload: " + jsonPayload); 
