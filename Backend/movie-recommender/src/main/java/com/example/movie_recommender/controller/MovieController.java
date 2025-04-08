@@ -43,6 +43,7 @@ public class MovieController {
 
         // Extract the user prompt from the request body
         String userPrompt = request.get("prompt");
+
         if (userPrompt == null || userPrompt.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
